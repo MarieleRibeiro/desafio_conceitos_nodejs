@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 
-// const { v4: uuid, validate: isUuid } = require('uuid');
+const { v4: uuid, validate: isUuid } = require('uuid');
 
 const app = express();
 
@@ -37,11 +37,40 @@ app.post("/repositories", (request, response) => {
 });
 
 app.put("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+  const { title, url, techs } = request.body
+
+  const repositoryIndex = repositories.findIndex(repositorie => repositorie.id == id);
+
+  if (repositoryIndex < 0) {
+    return response.status(400).json({ error: 'Repositorie not found' })
+  }
+
+  const repository = {
+    id,
+    title,
+    url,
+    techs,
+    likes: 1,
+  }
+
+  repositories[repositoryIndex] = repository;
+
+  return response.json(repository);
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  const repositoryIndex = repositories.findIndex(repositorie => repositorie.id == id);
+
+  if (repositoryIndex < 0) {
+    return response.status(400).json({ error: 'Project not found' });
+  }
+  repositories.splice(repositoryIndex, 1);
+
+  return response.status(204).send();
+
 });
 
 app.post("/repositories/:id/like", (request, response) => {
